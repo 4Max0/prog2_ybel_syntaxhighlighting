@@ -18,11 +18,48 @@ public final class MiniJavaTokens {
   // pattern can be selected as the "highlighted" region.
   public static List<Token> defaultTokens() {
     return List.of(
-        // Example: string literals (students should define further tokens below)
-        Token.of(Pattern.compile("\"([^\"\\\\]|\\\\.)*\""), MiniJavaColours.STRING_LITERAL_COLOUR)
+        // Strings: "hello world"
+        Token.of(Pattern.compile("\"([^\"\\\\]|\\\\.)*\""), MiniJavaColours.STRING_LITERAL_COLOUR),
 
-        // TODO: Define additional tokens for MiniJava, e.g. character literals, keywords,
-        // annotations, comments, identifiers, numbers, operators, etc.
-        );
+        // Characters: 'a' 'v' '\n'
+        Token.of(Pattern.compile("'([^'\\\\]|\\\\.)'"), MiniJavaColours.CHAR_LITERAL_COLOUR),
+
+        // Keywords: null import package public
+        Token.of(
+            Pattern.compile("\\b(package|import|class|public|private|final|return|null|new)\\b"),
+            MiniJavaColours.KEYWORD_COLOUR),
+
+        // Annotation @Override
+        Token.of(Pattern.compile("@[A-Za-z-][A-Za-z0-9-]*"), MiniJavaColours.ANNOTATION_COLOUR),
+
+        // Javadoc: /** ... */
+        Token.of(
+            Pattern.compile("/\\*\\*[^*]*\\*+(?:[^/*][^*]*\\*+)*/"),
+            MiniJavaColours.JAVADOC_COMMENT_COLOUR),
+
+        // Comment long: /* ... */
+        Token.of(
+            Pattern.compile("/\\*[^*]*\\*+(?:[^/*][^*]*\\*+)*/"),
+            MiniJavaColours.BLOCK_COMMENT_COLOUR),
+
+        // Comment short // ...
+        Token.of(Pattern.compile("//.*"), MiniJavaColours.LINE_COMMENT_COLOUR),
+
+        // Numbers: 1 2 13 1456
+        Token.of(Pattern.compile("\\b\\d+\\b"), MiniJavaColours.NUMBER_COLOUR),
+
+        // boolean: true false
+        Token.of(Pattern.compile("\\b(true|false)\\b"), MiniJavaColours.BOOLEAN_LITERAL_COLOUR),
+
+        // Types int Color boolean
+        Token.of(Pattern.compile("\\b[A-Z][A-Za-z0-9_]*\\b"), MiniJavaColours.TYPE_NAME_COLOUR),
+
+        // Identifiers ObjA aValue
+        Token.of(
+            Pattern.compile("\\b[A-Za-z_][A-Za-z0-9_]*\\b"), MiniJavaColours.IDENTIFIER_COLOUR),
+
+        // Operator: == = != > <
+        Token.of(
+            Pattern.compile("==|!=|<=|>=|&&|\\|\\||[+\\-*/=<>]"), MiniJavaColours.OPERATOR_COLOUR));
   }
 }
