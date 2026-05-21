@@ -1,0 +1,41 @@
+name: Github CI
+on:
+    pull_request:
+    workflow_dispatch:
+
+jobs:
+    # gradle test
+    j01_build:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v6
+            -   uses: actions/setup-java@v5
+                with:
+                    java-version: '25'
+                    distribution: 'temurin'
+            -   uses: gradle/actions/wrapper-validation@v6
+            -   run: ./gradlew build
+
+    j02_test:
+        needs: j01_build
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v6
+            -   uses: actions/setup-java@v5
+                with:
+                    java-version: '25'
+                    distribution: 'temurin'
+            -   uses: gradle/actions/wrapper-validation@v6
+            -   run: ./gradlew test
+
+    j03_format:
+        needs: j02_test
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v6
+            -   uses: actions/setup-java@v5
+                with:
+                    java-version: '25'
+                    distribution: 'temurin'
+            -   uses: gradle/actions/wrapper-validation@v6
+            -   run: ./gradlew spotlessCheck
