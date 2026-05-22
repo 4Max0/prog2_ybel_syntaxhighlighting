@@ -24,9 +24,13 @@ public final class MiniJavaTokens {
         // Characters: 'a' 'v' '\n'
         Token.of(Pattern.compile("'([^'\\\\]|\\\\.)'"), MiniJavaColours.CHAR_LITERAL_COLOUR),
 
+        // boolean: true false
+        Token.of(Pattern.compile("\\b(true|false)\\b"), MiniJavaColours.BOOLEAN_LITERAL_COLOUR),
+
         // Keywords: null import package public
         Token.of(
-            Pattern.compile("\\b(package|import|class|public|private|final|return|null|new)\\b"),
+            Pattern.compile(
+                "\\b(package|import|class|public|private|final|return|null|new|extends|this)\\b"),
             MiniJavaColours.KEYWORD_COLOUR),
 
         // Annotation @Override
@@ -47,16 +51,6 @@ public final class MiniJavaTokens {
 
         // Numbers: 1 2 13 1456
         Token.of(Pattern.compile("\\b\\d+\\b"), MiniJavaColours.NUMBER_COLOUR),
-
-        // boolean: true false
-        Token.of(Pattern.compile("\\b(true|false)\\b"), MiniJavaColours.BOOLEAN_LITERAL_COLOUR),
-
-        // Types int Color boolean
-        Token.of(Pattern.compile("\\b[A-Z][A-Za-z0-9_]*\\b"), MiniJavaColours.TYPE_NAME_COLOUR),
-
-        // Identifiers ObjA aValue
-        Token.of(
-            Pattern.compile("\\b[A-Za-z_][A-Za-z0-9_]*\\b"), MiniJavaColours.IDENTIFIER_COLOUR),
 
         // Operator: == = != > <
         Token.of(
