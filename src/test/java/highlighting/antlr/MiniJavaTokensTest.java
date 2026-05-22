@@ -45,8 +45,26 @@ public class MiniJavaTokensTest {
     return result;
   }
 
+  /**
+   * Eine methode zum einfachen Verifizieren des Ergebnisses von parseString. Die Test-Methode gibt
+   * einfach nur in der Konsole aus was gefunden wurde im Text.START_TEXT, nicht mehr. Der
+   * Hintergrund ist, dass ich das in diesem Fall einfacher zum Verifizieren habe als der Debugger
+   */
   @Test
-  void testString() {
+  public void parseString() {
+    // private void parseString() {
+    List<Token> tokens = MiniJavaTokens.defaultTokens();
+    List<HighlightRegion> regions = parseString(tokens, Texts.START_TEXT);
+    System.out.println("=== Found Tokens ===");
+    for (HighlightRegion r : regions) {
+      System.out.printf(
+          "%-12s  [%2d, %2d]  %s%n",
+          Texts.START_TEXT.substring(r.start(), r.end()), r.start(), r.end(), r.colour());
+    }
+  }
+
+  @Test
+  public void testString() {
     // given
     // that we have tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
@@ -54,7 +72,7 @@ public class MiniJavaTokensTest {
     // parsing a valid text
     List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
     // then
-    // we can see that the count is correct
+    // we can see that the count is correct to the amount in the text
     long keywordCount =
         regions.stream()
             .filter(r -> r.colour().equals(MiniJavaColours.STRING_LITERAL_COLOUR))
@@ -64,7 +82,7 @@ public class MiniJavaTokensTest {
   }
 
   @Test
-  void testCharacter() {
+  public void testCharacter() {
     // given
     // that we have tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
@@ -72,6 +90,7 @@ public class MiniJavaTokensTest {
     // parsing a valid text
     List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
     // then
+    // we can see that the count is correct to the amount in the text
     long keywordCount =
         regions.stream()
             .filter(r -> r.colour().equals(MiniJavaColours.CHAR_LITERAL_COLOUR))
@@ -81,21 +100,22 @@ public class MiniJavaTokensTest {
   }
 
   @Test
-  void testKeywords() {
+  public void testKeywords() {
     // given
     // that we have tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
     // when
     List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
     // then
+    // we can see that the count is correct to the amount in the text
     long keywordCount =
         regions.stream().filter(r -> r.colour().equals(MiniJavaColours.KEYWORD_COLOUR)).count();
 
-    assertEquals(17, keywordCount);
+    assertEquals(18, keywordCount);
   }
 
   @Test
-  void testAnnotations() {
+  public void testAnnotations() {
     // given
     // that we have tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
@@ -103,14 +123,15 @@ public class MiniJavaTokensTest {
     // parsing a valid text
     List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
     // then
+    // we can see that the count is correct to the amount in the text
     long keywordCount =
         regions.stream().filter(r -> r.colour().equals(MiniJavaColours.ANNOTATION_COLOUR)).count();
 
-    assertEquals(0, keywordCount);
+    assertEquals(1, keywordCount);
   }
 
   @Test
-  void testJavadoc() {
+  public void testJavadoc() {
     // given
     // that we have tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
@@ -118,6 +139,7 @@ public class MiniJavaTokensTest {
     // parsing a valid text
     List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
     // then
+    // we can see that the count is correct to the amount in the text
     long keywordCount =
         regions.stream()
             .filter(r -> r.colour().equals(MiniJavaColours.JAVADOC_COMMENT_COLOUR))
@@ -127,7 +149,7 @@ public class MiniJavaTokensTest {
   }
 
   @Test
-  void testCommentLong() {
+  public void testCommentLong() {
     // given
     // that we have tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
@@ -135,6 +157,7 @@ public class MiniJavaTokensTest {
     // parsing a valid text
     List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
     // then
+    // we can see that the count is correct to the amount in the text
     long keywordCount =
         regions.stream()
             .filter(r -> r.colour().equals(MiniJavaColours.BLOCK_COMMENT_COLOUR))
@@ -144,7 +167,7 @@ public class MiniJavaTokensTest {
   }
 
   @Test
-  void testCommentShort() {
+  public void testCommentShort() {
     // given
     // that we have tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
@@ -152,16 +175,17 @@ public class MiniJavaTokensTest {
     // parsing a valid text
     List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
     // then
+    // we can see that the count is correct to the amount in the text
     long keywordCount =
         regions.stream()
             .filter(r -> r.colour().equals(MiniJavaColours.LINE_COMMENT_COLOUR))
             .count();
 
-    assertEquals(1, keywordCount);
+    assertEquals(2, keywordCount);
   }
 
   @Test
-  void testNumbers() {
+  public void testNumbers() {
     // given
     // that we have tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
@@ -169,6 +193,7 @@ public class MiniJavaTokensTest {
     // parsing a valid text
     List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
     // then
+    // we can see that the count is correct to the amount in the text
     long keywordCount =
         regions.stream().filter(r -> r.colour().equals(MiniJavaColours.NUMBER_COLOUR)).count();
 
@@ -176,7 +201,7 @@ public class MiniJavaTokensTest {
   }
 
   @Test
-  void testBoolean() {
+  public void testBoolean() {
     // given
     // that we have tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
@@ -184,6 +209,7 @@ public class MiniJavaTokensTest {
     // parsing a valid text
     List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
     // then
+    // we can see that the count is correct to the amount in the text
     long keywordCount =
         regions.stream()
             .filter(r -> r.colour().equals(MiniJavaColours.BOOLEAN_LITERAL_COLOUR))
@@ -193,7 +219,7 @@ public class MiniJavaTokensTest {
   }
 
   @Test
-  void testOperator() {
+  public void testOperator() {
     // given
     // that we have tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
@@ -201,6 +227,7 @@ public class MiniJavaTokensTest {
     // parsing a valid text
     List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
     // then
+    // we can see that the count is correct to the amount in the text
     long keywordCount =
         regions.stream().filter(r -> r.colour().equals(MiniJavaColours.OPERATOR_COLOUR)).count();
 

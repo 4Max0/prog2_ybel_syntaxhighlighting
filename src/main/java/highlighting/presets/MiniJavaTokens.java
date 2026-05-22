@@ -18,14 +18,18 @@ public final class MiniJavaTokens {
   // pattern can be selected as the "highlighted" region.
   public static List<Token> defaultTokens() {
     return List.of(
-        // Strings: "hello world"
-        Token.of(Pattern.compile("\"([^\"\\\\]|\\\\.)*\""), MiniJavaColours.STRING_LITERAL_COLOUR),
+        // Javadoc: /** ... */
+        Token.of(
+            Pattern.compile("/\\*\\*[^*]*\\*+(?:[^/*][^*]*\\*+)*/"),
+            MiniJavaColours.JAVADOC_COMMENT_COLOUR),
 
-        // Characters: 'a' 'v' '\n'
-        Token.of(Pattern.compile("'([^'\\\\]|\\\\.)'"), MiniJavaColours.CHAR_LITERAL_COLOUR),
+        // Line Comment: // ...
+        Token.of(Pattern.compile("//[^\\n\\r]*"), MiniJavaColours.LINE_COMMENT_COLOUR),
 
-        // boolean: true false
-        Token.of(Pattern.compile("\\b(true|false)\\b"), MiniJavaColours.BOOLEAN_LITERAL_COLOUR),
+        // Block Comment: /* ... */
+        Token.of(
+            Pattern.compile("/\\*[^*]*\\*+(?:[^/*][^*]*\\*+)*/"),
+            MiniJavaColours.BLOCK_COMMENT_COLOUR),
 
         // Keywords: null import package public
         Token.of(
@@ -33,21 +37,17 @@ public final class MiniJavaTokens {
                 "\\b(package|import|class|public|private|final|return|null|new|extends|this)\\b"),
             MiniJavaColours.KEYWORD_COLOUR),
 
+        // boolean: true false
+        Token.of(Pattern.compile("\\b(true|false)\\b"), MiniJavaColours.BOOLEAN_LITERAL_COLOUR),
+
+        // Strings: "hello world"
+        Token.of(Pattern.compile("\"([^\"\\\\]|\\\\.)*\""), MiniJavaColours.STRING_LITERAL_COLOUR),
+
+        // Characters: 'a' 'v' '\n'
+        Token.of(Pattern.compile("'([^'\\\\]|\\\\.)'"), MiniJavaColours.CHAR_LITERAL_COLOUR),
+
         // Annotation @Override
         Token.of(Pattern.compile("@[A-Za-z-][A-Za-z0-9-]*"), MiniJavaColours.ANNOTATION_COLOUR),
-
-        // Javadoc: /** ... */
-        Token.of(
-            Pattern.compile("/\\*\\*[^*]*\\*+(?:[^/*][^*]*\\*+)*/"),
-            MiniJavaColours.JAVADOC_COMMENT_COLOUR),
-
-        // Comment long: /* ... */
-        Token.of(
-            Pattern.compile("/\\*[^*]*\\*+(?:[^/*][^*]*\\*+)*/"),
-            MiniJavaColours.BLOCK_COMMENT_COLOUR),
-
-        // Comment short // ...
-        Token.of(Pattern.compile("//.*"), MiniJavaColours.LINE_COMMENT_COLOUR),
 
         // Numbers: 1 2 13 1456
         Token.of(Pattern.compile("\\b\\d+\\b"), MiniJavaColours.NUMBER_COLOUR),
