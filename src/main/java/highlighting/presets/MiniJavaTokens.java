@@ -34,7 +34,7 @@ public final class MiniJavaTokens {
         // Keywords: null import package public
         Token.of(
             Pattern.compile(
-                "\\b(package|import|class|public|private|final|return|null|new|extends|this)\\b"),
+                "\\b(package|import|class|public|private|final|return|null|new|extends|this|static)\\b"),
             MiniJavaColours.KEYWORD_COLOUR),
 
         // boolean: true false
@@ -47,7 +47,7 @@ public final class MiniJavaTokens {
         Token.of(Pattern.compile("'([^'\\\\]|\\\\.)'"), MiniJavaColours.CHAR_LITERAL_COLOUR),
 
         // Annotation @Override
-        Token.of(Pattern.compile("@[A-Za-z-][A-Za-z0-9-]*"), MiniJavaColours.ANNOTATION_COLOUR),
+        Token.of(Pattern.compile("@[A-Za-z-][A-Za-z0-9-]*\\b"), MiniJavaColours.ANNOTATION_COLOUR),
 
         // Numbers: 1 2 13 1456
         Token.of(Pattern.compile("\\b\\d+\\b"), MiniJavaColours.NUMBER_COLOUR),

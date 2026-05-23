@@ -3,234 +3,293 @@ package highlighting.antlr;
 import static org.junit.jupiter.api.Assertions.*;
 
 import highlighting.core.HighlightRegion;
-import highlighting.presets.*;
+import highlighting.presets.MiniJavaColours;
+import highlighting.presets.MiniJavaTokens;
 import highlighting.regex.Token;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Test class for MiniJavaTokens. All tests are for small strings as, larger strings are not
+ * possible to test token to token without external logic.
+ */
 public class MiniJavaTokensTest {
-  /**
-   * Function to parse a string
-   *
-   * @param tokens The tokens used
-   * @param text The string to parse
-   * @return The result of the parsing
-   */
-  List<HighlightRegion> parseString(List<Token> tokens, String text) {
-    List<HighlightRegion> result = new ArrayList<>();
 
-    boolean[] occupied = new boolean[text.length()];
-
-    for (Token token : tokens) {
-      for (HighlightRegion region : token.test(text)) {
-
-        boolean free = true;
-        for (int i = region.start(); i < region.end(); i++) {
-          if (occupied[i]) {
-            free = false;
-            break;
-          }
-        }
-
-        if (free) {
-          result.add(region);
-          for (int i = region.start(); i < region.end(); i++) {
-            occupied[i] = true;
-          }
-        }
-      }
-    }
-
-    return result;
-  }
-
-  /**
-   * Eine methode zum einfachen Verifizieren des Ergebnisses von parseString. Die Test-Methode gibt
-   * einfach nur in der Konsole aus was gefunden wurde im Text.START_TEXT, nicht mehr. Der
-   * Hintergrund ist, dass ich das in diesem Fall einfacher zum Verifizieren habe als der Debugger
-   */
-  @Test
-  public void parseString() {
-    // private void parseString() {
-    List<Token> tokens = MiniJavaTokens.defaultTokens();
-    List<HighlightRegion> regions = parseString(tokens, Texts.START_TEXT);
-    System.out.println("=== Found Tokens ===");
-    for (HighlightRegion r : regions) {
-      System.out.printf(
-          "%-12s  [%2d, %2d]  %s%n",
-          Texts.START_TEXT.substring(r.start(), r.end()), r.start(), r.end(), r.colour());
-    }
+  /** Helper method to collect all regions of a specific color. */
+  private long countByColour(List<HighlightRegion> regions, java.awt.Color colour) {
+    return regions.stream().filter(r -> r.colour().equals(colour)).count();
   }
 
   @Test
-  public void testString() {
+  public void testKeywordBeginning() {
     // given
-    // that we have tokens
+    // We have our tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
-    // when
-    // parsing a valid text
-    List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
-    // then
-    // we can see that the count is correct to the amount in the text
-    long keywordCount =
-        regions.stream()
-            .filter(r -> r.colour().equals(MiniJavaColours.STRING_LITERAL_COLOUR))
-            .count();
 
-    assertEquals(1, keywordCount);
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("class Test").stream()).toList();
+
+    // then
+    // We get a hit for with a keyword the string (at the beginning)
+    assertEquals(1, countByColour(regions, MiniJavaColours.KEYWORD_COLOUR));
   }
 
   @Test
-  public void testCharacter() {
+  public void testKeywordMiddle() {
     // given
-    // that we have tokens
+    // We have our tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
-    // when
-    // parsing a valid text
-    List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
-    // then
-    // we can see that the count is correct to the amount in the text
-    long keywordCount =
-        regions.stream()
-            .filter(r -> r.colour().equals(MiniJavaColours.CHAR_LITERAL_COLOUR))
-            .count();
 
-    assertEquals(1, keywordCount);
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("abc class xyz").stream()).toList();
+
+    // then
+    // we get a keyword for the given string (even in the middle)
+    assertEquals(1, countByColour(regions, MiniJavaColours.KEYWORD_COLOUR));
   }
 
   @Test
-  public void testKeywords() {
+  public void testKeywordEnd() {
     // given
-    // that we have tokens
+    // We have our tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
-    // when
-    List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
-    // then
-    // we can see that the count is correct to the amount in the text
-    long keywordCount =
-        regions.stream().filter(r -> r.colour().equals(MiniJavaColours.KEYWORD_COLOUR)).count();
 
-    assertEquals(18, keywordCount);
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("abc class").stream()).toList();
+
+    // then
+    // we get a keyword for the given string (even at the end)
+    assertEquals(1, countByColour(regions, MiniJavaColours.KEYWORD_COLOUR));
   }
 
   @Test
-  public void testAnnotations() {
+  public void testKeywordMultiple() {
     // given
-    // that we have tokens
+    // We have our tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
-    // when
-    // parsing a valid text
-    List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
-    // then
-    // we can see that the count is correct to the amount in the text
-    long keywordCount =
-        regions.stream().filter(r -> r.colour().equals(MiniJavaColours.ANNOTATION_COLOUR)).count();
 
-    assertEquals(1, keywordCount);
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("class public static").stream()).toList();
+
+    // then
+    // We get 3 hits for keywords
+    assertEquals(3, countByColour(regions, MiniJavaColours.KEYWORD_COLOUR));
   }
 
   @Test
-  public void testJavadoc() {
+  public void testKeywordNoMatch() {
     // given
-    // that we have tokens
+    // We have our tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
-    // when
-    // parsing a valid text
-    List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
-    // then
-    // we can see that the count is correct to the amount in the text
-    long keywordCount =
-        regions.stream()
-            .filter(r -> r.colour().equals(MiniJavaColours.JAVADOC_COMMENT_COLOUR))
-            .count();
 
-    assertEquals(2, keywordCount);
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("hello world").stream()).toList();
+
+    // then
+    // We get 0 matches for keywords
+    assertEquals(0, countByColour(regions, MiniJavaColours.KEYWORD_COLOUR));
   }
 
   @Test
-  public void testCommentLong() {
+  public void testKeywordInsideWordNoMatch() {
     // given
-    // that we have tokens
+    // We have our tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
-    // when
-    // parsing a valid text
-    List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
-    // then
-    // we can see that the count is correct to the amount in the text
-    long keywordCount =
-        regions.stream()
-            .filter(r -> r.colour().equals(MiniJavaColours.BLOCK_COMMENT_COLOUR))
-            .count();
 
-    assertEquals(1, keywordCount);
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("classification").stream()).toList();
+
+    // then
+    // we get no hit for a keyword
+    assertEquals(0, countByColour(regions, MiniJavaColours.KEYWORD_COLOUR));
   }
 
   @Test
-  public void testCommentShort() {
+  public void testAnnotationBeginning() {
     // given
-    // that we have tokens
+    // We have our tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
-    // when
-    // parsing a valid text
-    List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
-    // then
-    // we can see that the count is correct to the amount in the text
-    long keywordCount =
-        regions.stream()
-            .filter(r -> r.colour().equals(MiniJavaColours.LINE_COMMENT_COLOUR))
-            .count();
 
-    assertEquals(2, keywordCount);
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("@Override").stream()).toList();
+
+    // then
+    // we will have a hit for an Annotation
+    assertEquals(1, countByColour(regions, MiniJavaColours.ANNOTATION_COLOUR));
   }
 
   @Test
-  public void testNumbers() {
+  public void testAnnotationLeadingWhitespace() {
     // given
-    // that we have tokens
+    // We have our tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
-    // when
-    // parsing a valid text
-    List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
-    // then
-    // we can see that the count is correct to the amount in the text
-    long keywordCount =
-        regions.stream().filter(r -> r.colour().equals(MiniJavaColours.NUMBER_COLOUR)).count();
 
-    assertEquals(0, keywordCount);
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("    @Override").stream()).toList();
+
+    // then
+    // we will have a hit for an Annotation
+    assertEquals(1, countByColour(regions, MiniJavaColours.ANNOTATION_COLOUR));
   }
 
   @Test
-  public void testBoolean() {
+  public void testLineCommentDetected() {
     // given
-    // that we have tokens
+    // We have our tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
-    // when
-    // parsing a valid text
-    List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
-    // then
-    // we can see that the count is correct to the amount in the text
-    long keywordCount =
-        regions.stream()
-            .filter(r -> r.colour().equals(MiniJavaColours.BOOLEAN_LITERAL_COLOUR))
-            .count();
 
-    assertEquals(0, keywordCount);
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("// hello world").stream()).toList();
+
+    // then
+    // we will have a hit for a line comment
+    assertEquals(1, countByColour(regions, MiniJavaColours.LINE_COMMENT_COLOUR));
   }
 
   @Test
-  public void testOperator() {
+  public void testBlockCommentShouldBeDetected() {
     // given
-    // that we have tokens
+    // We have our tokens
     List<Token> tokens = MiniJavaTokens.defaultTokens();
-    // when
-    // parsing a valid text
-    List<HighlightRegion> regions = this.parseString(tokens, Texts.START_TEXT);
-    // then
-    // we can see that the count is correct to the amount in the text
-    long keywordCount =
-        regions.stream().filter(r -> r.colour().equals(MiniJavaColours.OPERATOR_COLOUR)).count();
 
-    assertEquals(3, keywordCount);
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("/* hello world */").stream()).toList();
+
+    // then
+    // we will have a hit for a block comment
+    assertEquals(1, countByColour(regions, MiniJavaColours.BLOCK_COMMENT_COLOUR));
+  }
+
+  @Test
+  public void testJavadocDetected() {
+    // given
+    // We have our tokens
+    List<Token> tokens = MiniJavaTokens.defaultTokens();
+
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("/** hello world */").stream()).toList();
+
+    // then
+    // we will have a hit for a docstring
+    assertEquals(1, countByColour(regions, MiniJavaColours.JAVADOC_COMMENT_COLOUR));
+  }
+
+  @Test
+  public void testStringDetected() {
+    // given
+    // We have our tokens
+    List<Token> tokens = MiniJavaTokens.defaultTokens();
+
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("\"hello world\"").stream()).toList();
+
+    // then
+    // we will have a hit for a string
+    assertEquals(1, countByColour(regions, MiniJavaColours.STRING_LITERAL_COLOUR));
+  }
+
+  @Test
+  public void testCharacterDetected() {
+    // given
+    // We have our tokens
+    List<Token> tokens = MiniJavaTokens.defaultTokens();
+
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions = tokens.stream().flatMap(t -> t.test("'a'").stream()).toList();
+
+    // then
+    // we will have a hit for a char
+    assertEquals(1, countByColour(regions, MiniJavaColours.CHAR_LITERAL_COLOUR));
+  }
+
+  @Test
+  public void testNumbersDetected() {
+    // given
+    // We have our tokens
+    List<Token> tokens = MiniJavaTokens.defaultTokens();
+
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("1 42 999").stream()).toList();
+
+    // then
+    // we will have a hit for 3 numbers
+    assertEquals(3, countByColour(regions, MiniJavaColours.NUMBER_COLOUR));
+  }
+
+  @Test
+  public void testBooleanDetected() {
+    // given
+    // We have our tokens
+    List<Token> tokens = MiniJavaTokens.defaultTokens();
+
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("if true else false").stream()).toList();
+
+    // then
+    // we will have 2 hits for boolean
+    assertEquals(2, countByColour(regions, MiniJavaColours.BOOLEAN_LITERAL_COLOUR));
+  }
+
+  @Test
+  public void testOperatorsDetected() {
+    // given
+    // We have our tokens
+    List<Token> tokens = MiniJavaTokens.defaultTokens();
+
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("a == b != c").stream()).toList();
+
+    // then
+    // we will have 2 hits for 2 operators
+    assertEquals(2, countByColour(regions, MiniJavaColours.OPERATOR_COLOUR));
+  }
+
+  @Test
+  public void testStringContainingCommentSymbols() {
+    // given
+    // We have our tokens
+    List<Token> tokens = MiniJavaTokens.defaultTokens();
+
+    // when
+    // We check the tokens
+    List<HighlightRegion> regions =
+        tokens.stream().flatMap(t -> t.test("\"// not a comment\"").stream()).toList();
+
+    // then
+    // We find a string literal
+    // NOTE: the naive highlighter will have problems with this and even here the regex will find
+    // the comment
+    assertEquals(1, countByColour(regions, MiniJavaColours.STRING_LITERAL_COLOUR));
   }
 }
