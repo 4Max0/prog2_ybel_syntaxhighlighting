@@ -1,10 +1,11 @@
 package highlighting.presets;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import highlighting.core.HighlightRegion;
 import highlighting.regex.Token;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test class for MiniJavaTokens. All tests are for small strings as, larger strings are not
