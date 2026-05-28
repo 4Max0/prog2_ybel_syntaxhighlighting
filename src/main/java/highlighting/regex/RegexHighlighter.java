@@ -2,6 +2,7 @@ package highlighting.regex;
 
 import highlighting.core.HighlightRegion;
 import highlighting.core.SyntaxHighlighter;
+import highlighting.presets.MiniJavaTokens;
 import java.util.List;
 
 // TODO: Implement a simple regex-based highlighting strategy. Unlike the scanning approach, this
@@ -17,7 +18,11 @@ public class RegexHighlighter extends SyntaxHighlighter {
   // {@code HighlightRegion}s, and combine all of these regions into a single list.
   @Override
   public List<HighlightRegion> collectMatches(String text) {
-    throw new UnsupportedOperationException("not implemented yet");
+    List<Token> tokens = MiniJavaTokens.defaultTokens();
+    // NOTE: a for each where we put everything in a list would also do, but I'm lazy and this is
+    // shorter to write
+    return tokens.stream().flatMap(t -> t.test(text).stream()).toList();
+    // throw new UnsupportedOperationException("not implemented yet");
   }
 
   // TODO: Resolve overlapping regions. Assume that {@code regions} has been normalised and sorted.
