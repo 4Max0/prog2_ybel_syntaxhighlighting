@@ -49,11 +49,12 @@ public final class MiniJavaTokens {
         // Annotation @Override
         Token.of(Pattern.compile("@[A-Za-z-][A-Za-z0-9-]*\\b"), MiniJavaColours.ANNOTATION_COLOUR),
 
-        // Numbers: 1 2 13 1456
-        Token.of(Pattern.compile("\\b\\d+\\b"), MiniJavaColours.NUMBER_COLOUR),
+        // Numbers: 1 +213.4 -23.4 213.3
+        Token.of(Pattern.compile("(?<!\\w)[+-]?\\d+(\\.\\d+)?\\b"), MiniJavaColours.NUMBER_COLOUR),
 
         // Operator: == = != > <
         Token.of(
-            Pattern.compile("==|!=|<=|>=|&&|\\|\\||[+\\-*/=<>]"), MiniJavaColours.OPERATOR_COLOUR));
+            Pattern.compile("==|!=|!<|!>|<=|>=|&&|\\|\\||[!&|+\\-*/=<>]"),
+            MiniJavaColours.OPERATOR_COLOUR));
   }
 }

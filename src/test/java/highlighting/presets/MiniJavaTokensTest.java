@@ -234,11 +234,11 @@ public class MiniJavaTokensTest {
     // when
     // We check the tokens
     List<HighlightRegion> regions =
-        tokens.stream().flatMap(t -> t.test("1 42 999").stream()).toList();
+        tokens.stream().flatMap(t -> t.test("1 42 999 23f1f 2.213 -32.9").stream()).toList();
 
     // then
     // we will have a hit for 3 numbers
-    assertEquals(3, countByColour(regions, MiniJavaColours.NUMBER_COLOUR));
+    assertEquals(5, countByColour(regions, MiniJavaColours.NUMBER_COLOUR));
   }
 
   @Test
