@@ -18,11 +18,43 @@ public final class MiniJavaTokens {
   // pattern can be selected as the "highlighted" region.
   public static List<Token> defaultTokens() {
     return List.of(
-        // Example: string literals (students should define further tokens below)
-        Token.of(Pattern.compile("\"([^\"\\\\]|\\\\.)*\""), MiniJavaColours.STRING_LITERAL_COLOUR)
+        // Javadoc: /** ... */
+        Token.of(
+            Pattern.compile("/\\*\\*[^*]*\\*+(?:[^/*][^*]*\\*+)*/"),
+            MiniJavaColours.JAVADOC_COMMENT_COLOUR),
 
-        // TODO: Define additional tokens for MiniJava, e.g. character literals, keywords,
-        // annotations, comments, identifiers, numbers, operators, etc.
-        );
+        // Line Comment: // ...
+        Token.of(Pattern.compile("//[^\\n\\r]*"), MiniJavaColours.LINE_COMMENT_COLOUR),
+
+        // Block Comment: /* ... */
+        Token.of(
+            Pattern.compile("/\\*[^*]*\\*+(?:[^/*][^*]*\\*+)*/"),
+            MiniJavaColours.BLOCK_COMMENT_COLOUR),
+
+        // Keywords: null import package public
+        Token.of(
+            Pattern.compile(
+                "\\b(package|import|class|public|private|final|return|null|new|extends|this|static)\\b"),
+            MiniJavaColours.KEYWORD_COLOUR),
+
+        // boolean: true false
+        Token.of(Pattern.compile("\\b(true|false)\\b"), MiniJavaColours.BOOLEAN_LITERAL_COLOUR),
+
+        // Strings: "hello world"
+        Token.of(Pattern.compile("\"([^\"\\\\]|\\\\.)*\""), MiniJavaColours.STRING_LITERAL_COLOUR),
+
+        // Characters: 'a' 'v' '\n'
+        Token.of(Pattern.compile("'([^'\\\\]|\\\\.)'"), MiniJavaColours.CHAR_LITERAL_COLOUR),
+
+        // Annotation @Override
+        Token.of(Pattern.compile("@[A-Za-z-][A-Za-z0-9-]*\\b"), MiniJavaColours.ANNOTATION_COLOUR),
+
+        // Numbers: 1 +213.4 -23.4 213.3
+        Token.of(Pattern.compile("(?<!\\w)[+-]?\\d+(\\.\\d+)?\\b"), MiniJavaColours.NUMBER_COLOUR),
+
+        // Operator: == = != > <
+        Token.of(
+            Pattern.compile("==|!=|!<|!>|<=|>=|&&|\\|\\||[!&|+\\-*/=<>]"),
+            MiniJavaColours.OPERATOR_COLOUR));
   }
 }
