@@ -185,9 +185,9 @@ public class RegexHighlighterTest {
     // given
     // We have 2 HighlightRegions regions that overlap
     List<HighlightRegion> regions =
-      List.of(
-        new HighlightRegion(0, 10, MiniJavaColours.KEYWORD_COLOUR),
-        new HighlightRegion(5, 15, MiniJavaColours.NUMBER_COLOUR));
+        List.of(
+            new HighlightRegion(0, 10, MiniJavaColours.KEYWORD_COLOUR),
+            new HighlightRegion(5, 15, MiniJavaColours.NUMBER_COLOUR));
 
     // when
     // we resolve the conflicts
@@ -207,9 +207,9 @@ public class RegexHighlighterTest {
     // given
     // We have 2 HighlightRegions regions that overlap
     List<HighlightRegion> regions =
-      List.of(
-        new HighlightRegion(0, 20, MiniJavaColours.BLOCK_COMMENT_COLOUR),
-        new HighlightRegion(5, 10, MiniJavaColours.KEYWORD_COLOUR));
+        List.of(
+            new HighlightRegion(0, 20, MiniJavaColours.BLOCK_COMMENT_COLOUR),
+            new HighlightRegion(5, 10, MiniJavaColours.KEYWORD_COLOUR));
 
     // when
     // we resolve the conflicts
@@ -218,7 +218,6 @@ public class RegexHighlighterTest {
     // then
     // we have the outer region winning
     assertEquals(1, result.size());
-    assertEquals(MiniJavaColours.BLOCK_COMMENT_COLOUR,
-      result.getFirst().colour());
+    assertEquals(MiniJavaColours.BLOCK_COMMENT_COLOUR, result.getFirst().colour());
   }
 }
