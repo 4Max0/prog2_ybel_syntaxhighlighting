@@ -2,7 +2,9 @@ package highlighting.antlr;
 
 import highlighting.core.HighlightRegion;
 import highlighting.core.SyntaxHighlighter;
-import java.awt.*;
+import highlighting.presets.MiniJavaColours;
+import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 import org.antlr.v4.runtime.*;
 
@@ -31,6 +33,111 @@ public class AntlrTokenCollector extends SyntaxHighlighter {
   // present).
   @Override
   public List<HighlightRegion> collectMatches(String text) {
-    throw new UnsupportedOperationException("not implemented yet");
+    List<HighlightRegion> result = new ArrayList<>();
+    var input = CharStreams.fromString(text);
+    MiniJavaLexer lexer = new MiniJavaLexer(input);
+    var tokens = new CommonTokenStream(lexer);
+    tokens.fill();
+
+    for (int i = 0; i < tokens.size(); i++) {
+      Token t = tokens.get(i);
+
+      // skip the end of file token
+      if (t.getType() == Token.EOF) {
+        continue;
+      }
+
+      // determine the colour by helper function
+      Color colour = deduceColour(t);
+      // if not null we add it to the tokens
+      if (colour != null) {
+        result.add(new HighlightRegion(t.getStartIndex(), t.getStopIndex() + 1, colour));
+      }
+
+      // Annotation highlighting handling
+      // we add the current and the next element (if it is an identifier)
+      if (t.getType() == MiniJavaLexer.AT) {
+        // add current
+        result.add(
+            new HighlightRegion(
+                t.getStartIndex(), t.getStopIndex() + 1, MiniJavaColours.ANNOTATION_COLOUR));
+
+        // add next if it is identifier.
+        if (i + 1 < tokens.size() && tokens.get(i + 1).getType() == MiniJavaLexer.IDENTIFIER) {
+          Token id = tokens.get(i + 1);
+          result.add(
+              new HighlightRegion(
+                  id.getStartIndex(), id.getStopIndex() + 1, MiniJavaColours.ANNOTATION_COLOUR));
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Helper function the get the Colour
+   *
+   * @param token the token to check
+   * @return the AWT Colour from MiniJavaColours
+   */
+  private Color deduceColour(Token token) {
+    return switch (token.getType()) {
+
+      // Keywords
+      case MiniJavaLexer.PACKAGE,
+          MiniJavaLexer.IMPORT,
+          MiniJavaLexer.CLASS,
+          MiniJavaLexer.PUBLIC,
+          MiniJavaLexer.PRIVATE,
+          MiniJavaLexer.FINAL,
+          MiniJavaLexer.RETURN,
+          MiniJavaLexer.NULL,
+          MiniJavaLexer.NEW,
+          MiniJavaLexer.IF,
+          MiniJavaLexer.ELSE,
+          MiniJavaLexer.WHILE,
+          MiniJavaLexer.EXTENDS,
+          MiniJavaLexer.IMPLEMENTS ->
+          MiniJavaColours.KEYWORD_COLOUR;
+
+      // String Literals
+      case MiniJavaLexer.STRING_LITERAL -> MiniJavaColours.STRING_LITERAL_COLOUR;
+
+      // Char Literal
+      case MiniJavaLexer.CHAR_LITERAL -> MiniJavaColours.CHAR_LITERAL_COLOUR;
+
+      // Comments
+      case MiniJavaLexer.LINE_COMMENT -> MiniJavaColours.LINE_COMMENT_COLOUR;
+
+      // Block Comment
+      case MiniJavaLexer.BLOCK_COMMENT -> MiniJavaColours.BLOCK_COMMENT_COLOUR;
+
+      // Javadoc
+      case MiniJavaLexer.JAVADOC_COMMENT -> MiniJavaColours.JAVADOC_COMMENT_COLOUR;
+
+      // Operators
+      case MiniJavaLexer.PLUS,
+          MiniJavaLexer.MINUS,
+          MiniJavaLexer.STAR,
+          MiniJavaLexer.SLASH,
+          MiniJavaLexer.PERCENT,
+          MiniJavaLexer.ASSIGN,
+          MiniJavaLexer.LT,
+          MiniJavaLexer.GT,
+          MiniJavaLexer.BANG,
+          MiniJavaLexer.LE,
+          MiniJavaLexer.GE,
+          MiniJavaLexer.EQUAL,
+          MiniJavaLexer.NOTEQUAL,
+          MiniJavaLexer.AND,
+          MiniJavaLexer.OR,
+          MiniJavaLexer.QUESTION,
+          MiniJavaLexer.COLON ->
+          MiniJavaColours.OPERATOR_COLOUR;
+
+      // undetectable
+      default -> null;
+    };
   }
 }
