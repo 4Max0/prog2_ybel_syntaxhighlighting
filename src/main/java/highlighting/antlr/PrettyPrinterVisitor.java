@@ -33,49 +33,75 @@ public final class PrettyPrinterVisitor extends MiniJavaBaseVisitor<Void> {
     return out.toString();
   }
 
-  // ----------------------------------------------------
-  // Structural methods – these enforce indentation and "one statement per line"
-  //
-  // TODO: implement the four structural visitXyz-methods below: visitCompilationUnit,
-  // visitClassBody, visitBlock, and visitStatement
-  // ----------------------------------------------------
-
   @Override
   public Void visitCompilationUnit(MiniJavaParser.CompilationUnitContext ctx) {
-    // TODO:
-    // Produce a nicely structured compilation unit:
-    // - package declaration (if present),
-    // - import declarations (one per line),
-    // - type declarations (one after another),
-    // with sensible blank lines between these parts.
+    // package
+    if (ctx.packageDecl() != null) {
+      visit(ctx.packageDecl());
+      // separate package from imports with one blank line
+      nl();
+      nl();
+    }
+
+    // imports
+    for (var child : ctx.importDecl()) {
+      visit(child);
+      nl();
+    }
+
+    // newline between import and types
+    if (!ctx.importDecl().isEmpty() && !ctx.typeDecl().isEmpty()) {
+      nl();
+    }
+
+    // types
+    for (var child : ctx.typeDecl()) {
+      visit(child);
+    }
     return null;
   }
 
   @Override
   public Void visitClassBody(MiniJavaParser.ClassBodyContext ctx) {
-    // TODO:
-    // Format the contents of a class body:
-    // - opening and closing brace,
-    // - one member declaration per line,
-    // - members indented relative to the class.
+    writeln(" {");
+    this.currentIndent++;
+
+    // go through the children of class body statements with a new line
+    for (var child : ctx.classBodyDeclaration()) {
+      visit(child);
+      nl();
+    }
+
+    this.currentIndent--;
+    writeln("}");
     return null;
   }
 
   @Override
   public Void visitBlock(MiniJavaParser.BlockContext ctx) {
-    // TODO:
-    // Format a block:
-    // - opening and closing brace,
-    // - one blockStatement per line,
-    // - nested blocks indented further.
+    writeln("{");
+    currentIndent++;
+
+    // go through the children of block statements with a new line
+    for (var child : ctx.blockStatement()) {
+      visit(child);
+      nl();
+    }
+
+    currentIndent--;
+    // closing bracket
+    write("}");
     return null;
   }
 
   @Override
   public Void visitStatement(MiniJavaParser.StatementContext ctx) {
-    // TODO:
-    // Ensure that each statement (if/while/return/block/...) ends up
-    // on exactly one line, with proper indentation for nested statements.
+    // the statements are already ensured to be on one line through their parents (visitBlock and
+    // visitClassBody), so we only need to look at the children, and it will automatically newline
+    // when we need to.
+    for (var child : ctx.children) {
+      visit(child);
+    }
     return null;
   }
 

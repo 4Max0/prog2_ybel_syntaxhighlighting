@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.antlr.v4.runtime.*;
 
-// TODO Phase III — AntlrTokenCollector (token-based syntax highlighting).
-
 // This highlighter uses the ANTLR-generated MiniJavaLexer to turn the input text into a token
 // stream. {@code collectMatches(String)} is the only method you need to implement: extract tokens
 // of interest and map them to {@code HighlightRegions} using the colours from {@code
@@ -17,7 +15,6 @@ import org.antlr.v4.runtime.*;
 // the base class {@code SyntaxHighlighter} via the template method {@code computeRegions(...)}.
 public class AntlrTokenCollector extends SyntaxHighlighter {
 
-  // TODO (Phase III — implement this method): Use the token stream produced by the ANTLR-generated
   // {@code MiniJavaLexer} to collect highlight regions.
   //
   // Requirements / hints:
