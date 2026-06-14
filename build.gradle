@@ -34,7 +34,6 @@ tasks.withType(JavaCompile).configureEach {
 
 // main()
 application {
-    // TODO: Define your main class here
     mainClass = 'highlighting.Main'
 }
 
